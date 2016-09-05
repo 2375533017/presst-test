@@ -3,7 +3,11 @@ package org.sunny.stresstool;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.codec.binary.StringUtils;
+
+import com.busap.stresstool.util.Constant;
 import com.busap.stresstool.util.HttpClient;
+import com.busap.stresstool.util.Utils;
 
 
 public class BizService {
@@ -11,18 +15,24 @@ public class BizService {
 	private static boolean isRun = false;
 	private static AtomicInteger overCount = new AtomicInteger(0);
 	private static AtomicInteger failCount = new AtomicInteger(0);
+	
+
 
 	public void dealBiz(final String url, String userCount,
 			String totalCount, String intervalTime)  {
 		isRun = true;
 		initNum();
-		final int userThreadNumber = Integer.parseInt(userCount);
-		final int intervalTimeNumber = Integer.parseInt(intervalTime);
-		final int totalCountNumber = Integer.parseInt(totalCount);
+		final int userThreadNumber = Utils.isEmpty(userCount)?Constant.DEFAULT_USER_COUNT  :  Integer.parseInt(userCount);
+		final int intervalTimeNumber =Utils.isEmpty(intervalTime)? Constant.DEFAULT_INTERVAL_TIME : Integer.parseInt(intervalTime);
+		final int totalCountNumber = Utils.isEmpty(totalCount) ? Constant.DEFAULT_TOTAL_COUNT : Integer.parseInt(totalCount);
 		
 		startCompleteListerner(userThreadNumber * totalCountNumber);
 		
 		for (int i = 0; i < userThreadNumber; i++) {  
+			if(Utils.isEmpty(url)){
+				completeJob();
+				break;
+			}
 			Worker worker = new Worker("work"+i, url, intervalTimeNumber, totalCountNumber);
 			worker.start();
 		}

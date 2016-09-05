@@ -12,7 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.sunny.stresstool.BizService;
+
+import com.busap.stresstool.util.Constant;
+import com.busap.stresstool.util.Utils;
 
 public class MainFrame {
 	private static final long serialVersionUID = 1L;
@@ -59,8 +63,8 @@ public class MainFrame {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int total = Integer.parseInt(t_total_num.getText());
-				int userNum = Integer.parseInt(t_user_count.getText());
+				int total = Utils.isEmpty(t_total_num.getText()) ? Constant.DEFAULT_TOTAL_COUNT :  Integer.parseInt(t_total_num.getText());
+				int userNum = Utils.isEmpty(t_user_count.getText()) ? Constant.DEFAULT_USER_COUNT :  Integer.parseInt(t_user_count.getText());
 						
 				while(service.isRun()){
 					l_over_count_show.setText(service.getOverNum()+" /  " + total * userNum );
